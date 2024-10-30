@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+
+    # nginx
+    nginx:
+        container_name: nginx
+        build: 
+            context: ./nginx/
+            dockerfile: DockerFile    
+        depends_on:
+            - django
+        networks:
+            - dockerized_django_net
+        ports:
+            - "50:50"
+        volumes:
+            - static-files:/www/static
+        links:
+            - django:django
+        restart: always
