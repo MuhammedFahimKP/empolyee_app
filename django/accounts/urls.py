@@ -9,6 +9,6 @@ from .views import (
 
 urlpatterns =    [
 
-    path('',employee_api_view),
-    path('<int:pk>/',employee_api_view)
+    path('',employee_api_view,name='employee-create-list'),
+    path('<int:pk>/',employee_api_view,name='employee-retrive-update-destroy-view')
 ]

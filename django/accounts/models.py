@@ -40,6 +40,10 @@ class MyUser(AbstractBaseUser):
     REQUIRED_FIELDS = ['name']
     
     
+    class Meta:
+        ordering = ['email']
+    
+    
     
     
     

@@ -55,13 +55,19 @@ DEFAULT_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
 ]
+
+
+CORS_ALLOW_ALL_ORIGINS = True 
+CORS_URL_REGEX = r"^/api/.*"
 
 #for our third party package apps
 THIRD_PARTY_APPS  = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_filters',
 ]
 
 
