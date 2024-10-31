@@ -2,10 +2,20 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
+from rest_framework.exceptions import  (
+    NotFound,
+    NotAuthenticated,   
+    AuthenticationFailed,
+)    
 
 from  .models import Roles
-from  .utils  import get_group_and_roles,get_roles,get_groups
-
+from  .utils  import (
+    
+    get_roles,
+    get_groups,
+    get_jwt_token,
+    get_group_and_roles,
+)
 
 
 USER = get_user_model()
@@ -80,11 +90,13 @@ class EmployeeCreatUpdateSearilizer(serializers.ModelSerializer):
         
         roles = get_group_and_roles().get(group.upper())
         
+        print(roles)
+        
         
         
         if roles is None:
             
-            raise serializers.ValidationError({'group': f'no {group} named department exist '})
+            raise serializers.ValidationError({'department': f'no  department exist named {group} '})
         
         _roles = [ __role  for __role in roles ]
         
@@ -102,7 +114,6 @@ class EmployeeCreatUpdateSearilizer(serializers.ModelSerializer):
         
         data['password']  = password
         data['group']     = group 
-        data['is_active'] = True 
 
         return data
     
@@ -110,8 +121,11 @@ class EmployeeCreatUpdateSearilizer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         
+     
         
         instance = USER.objects.create(**validated_data)
+        instance.is_active = True
+        instance.save()
         
         response_data = self.to_representation(instance)
         
@@ -149,10 +163,8 @@ class EmployeeCreatUpdateSearilizer(serializers.ModelSerializer):
         response_data     =  self.to_representation(instance)
         response_data['role'] = validated_data['role']
         response_data['department'] = validated_data['group']
-        response_dict = {'id':instance.id} 
-        response_dict.update(response_data)
-        return response_dict
-                
+        
+        return response_data        
         
      
         
@@ -167,7 +179,7 @@ class EmployeeCreatUpdateSearilizer(serializers.ModelSerializer):
         
         model  = USER
         fields = [
-            
+            'id',
             'email',
             'name',
             'passkey',
@@ -175,17 +187,50 @@ class EmployeeCreatUpdateSearilizer(serializers.ModelSerializer):
             'role',
         ] 
         extra_kwargs = {
-            'email':{
-                'validators':[]
+            'id':{
+                'read_only':True
             }
         }
         
-class EmployeeeUpdateSerilizer(serializers.ModelSerializer) :
-    role       = serializers.ChoiceField(choices=get_roles(),write_only=True)
-    department = serializers.ChoiceField(choices=get_groups(),write_only=True)
-    passkey    = serializers.CharField(min_length=6,max_length=16,write_only=True)
+  
+        
+class AdminLoginSerializer(serializers.Serializer):
+    
+    
+    email    = serializers.EmailField()
+    passkey  = serializers.CharField(min_length=6,max_length=16,write_only=True)
+    access   = serializers.CharField(read_only=True)
+    refresh  = serializers.CharField(read_only=True)
+    name     = serializers.CharField(read_only=True)
+    
+    def validate(self, data):
+        
+        users = USER.objects.filter(email=data['email'])
+        
+        if len(users) == 0:
+            raise NotFound({'email':'no user found with this email id'})
+        
+        
+        user  = users.first()
+        
+        if user.check_password(data['passkey']) == False:
+            
+            raise AuthenticationFailed({'passkey':'incorrect passkey'})
+        
+        if user.role.name  != 'SUPER ADMIN':
+            raise  NotAuthenticated({'detail':'only  SUPER ADMIN have persmssion '})
+        
+        data.update({'name':user.name})
+        data.update(get_jwt_token(user))
+                
+        return data
     
     class Meta:
         
-        model  = USER
-        fields = EmployeeCreatUpdateSearilizer.Meta.fields       
+        fields =  [
+            'email',
+            'name',
+            'passkey',
+            'access',
+            'refresh',            
+        ]

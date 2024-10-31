@@ -83,7 +83,7 @@ class MyUserManger(BaseUserManager):
     
 
         user  = self.model(email=email,name=name,role=role,**other_fields)
-        user.set_password(make_password(password))
+        user.set_password(password)
         user.save()
         return user
 
