@@ -11,7 +11,7 @@ services:
         depends_on:
             - django
         networks:
-            - dockerized_django_net
+            - employee_app_network
         ports:
             - "50:50"
         volumes:

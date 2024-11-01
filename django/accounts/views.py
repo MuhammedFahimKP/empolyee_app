@@ -80,15 +80,7 @@ class EmpoloyeeListCreateAPIView(generics.GenericAPIView):
          
     
     
-    @extend_schema(
-        
-        responses={
-                
-                201:OpenApiResponse(response=EmployeeRetriveSerailizer),
-            
-        }
-    
-    ) 
+    @extend_schema(responses={201:OpenApiResponse(response=EmployeeRetriveSerailizer),}) 
     def post(self,request:Request) -> Response :
         
            
@@ -175,10 +167,7 @@ class EmployeeRetriveUpdateDestroyAPIView(generics.GenericAPIView):
     
     
     
-    @extend_schema(responses={
-        200:OpenApiResponse(response=EmployeeRetriveSerailizer),
-        
-    })
+    @extend_schema(responses={200:OpenApiResponse(response=EmployeeRetriveSerailizer),})
     def put(self,request:Request,pk:int) -> Request :
         
         

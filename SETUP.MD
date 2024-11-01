@@ -4,7 +4,8 @@
 
 - ` DEBUG`: Debug mode. If on, will display details of error pages. If your app raises an exception when DEBUG is on, will display a detailed traceback, including a lot of metadata about the environment, such as all the currently defined Django settinngs . Never deploy a site into production with DEBUG turned on.
 - ` SECRET_KEY`: The secret key to use for cryptographic operations should be set to a unique, unpredictable value. Never deploy a site into production with the default secret key.
-- ` DATABASE_URL`: Provide The Database URL of your postgres likey postgresql://DB_USER:DB_PASS@DB_HOST:DB_PORT/DB_NAME'
+- ` DATABASE_URL`: Provide The Database URL of your postgres likey postgresql://your psql user name : your psql password @ your db host : your db port/ your db name'
+- ` TEST_ADMIN_PASSWORD`:Provide a password for testcases to create admin
 
 ### warn before run
 
